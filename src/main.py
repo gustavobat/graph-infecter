@@ -1,5 +1,4 @@
 import igraph
-import matplotlib.pyplot as plt
 
 
 def plot_graph(g: igraph.Graph):
