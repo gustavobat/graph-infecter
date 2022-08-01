@@ -1,6 +1,18 @@
 import igraph
 
 
+def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
+    vertex = g.vs[vertex_id]
+    old_color = vertex["color"]
+    print(old_color)
+    vertex["color"] = new_color
+    neighbors = vertex.neighbors()
+    for neigh_vertex in neighbors:
+        if neigh_vertex["color"] == old_color:
+            infect_vertex(g, neigh_vertex.index, new_color)
+
+
+
 def plot_graph(g: igraph.Graph):
     layout = g.layout("kamada_kawai")
     labels = [str(v.index + 1) for v in g.vs]
@@ -27,7 +39,7 @@ def main():
                 vertex_colors.append('darkred')
             if color_tag == 'R':
                 vertex_colors.append('red')
-
+            
         while True:
             line = f.readline().rsplit()
             if line:
@@ -37,7 +49,7 @@ def main():
                 break
 
         g.add_edges(edge_list)
-        g.vs["color"] = vertex_colors
+        g.vs["color"] = vertex_colors 
         plot_graph(g)
 
 
