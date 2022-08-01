@@ -10,24 +10,35 @@ def plot_graph(g: igraph.Graph):
 
 def main():
     g = igraph.Graph()
-
+    max_moves = None
     with open("input/pati.txt", "r", encoding='utf-8') as f:
-        line = f.readline()
-        n_nodes = int(line)
+        n_nodes = int(f.readline())
+        print(f"Number of nodes: {n_nodes}")
+        max_moves = int(f.readline())
+        print(f"Allowed movements: {max_moves}")
         g.add_vertices(n_nodes)
         print(g)
         edge_list = list()
+        node_colors = list()
+        for i in range(n_nodes):
+            color_tag = f.readline().rsplit()[0]
+            print(i)
+            if color_tag is 'G':
+                node_colors.append('green')
+            if color_tag is 'M':
+                node_colors.append('darkred')
+            if color_tag is 'R':
+                node_colors.append('red')
+            
         while True:
             line = f.readline().rsplit()
             if line:
                 edge_nodes = (int(line[0]) - 1, int(line[1]) - 1)
-                print(edge_nodes)
                 edge_list.append(edge_nodes)
             else:
                 break
-        print(edge_list)
         g.add_edges(edge_list)
-        print(g)
+        g.vs["color"] = node_colors 
         plot_graph(g)
 
 
