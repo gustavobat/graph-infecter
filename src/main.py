@@ -17,12 +17,10 @@ def main():
         max_moves = int(f.readline())
         print(f"Allowed movements: {max_moves}")
         g.add_vertices(n_nodes)
-        print(g)
         edge_list = list()
         node_colors = list()
         for i in range(n_nodes):
             color_tag = f.readline().rsplit()[0]
-            print(i)
             if color_tag is 'G':
                 node_colors.append('green')
             if color_tag is 'M':
