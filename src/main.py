@@ -1,8 +1,32 @@
 import igraph
+from copy import deepcopy
 
 
-def solve(g: igraph.Graph, allowed_moves: int):
-    print("solve")
+def solve(g: igraph.Graph, color_list: list, allowed_moves: int) -> bool:
+    print(f"Trying new solution, moves: {allowed_moves}")
+    print(g.vs[0]["color"])
+    if allowed_moves == 0:
+        return False
+    possible_vertices_to_infect = set()
+    for vertex in g.vs:
+        neighbors_ids = set()
+        get_ids_of_neighbors_of_same_color(g, vertex.index, neighbors_ids)
+        possible_vertices_to_infect.add(min(neighbors_ids))
+    
+    if len(possible_vertices_to_infect) == 1:
+        print("SOLVED")
+        return True
+    
+    for vertex_id in possible_vertices_to_infect:
+        colors_to_infect = deepcopy(color_list)
+        colors_to_infect.remove(g.vs[vertex_id]["color"])
+        for color in colors_to_infect:
+            new_g = deepcopy(g)
+            infect_vertex(new_g, vertex_id, color)
+            if solve(new_g, color_list, allowed_moves - 1) is False:
+                allowed_moves += 1
+                continue
+
 
 
 def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbors_ids: set):
@@ -34,6 +58,7 @@ def plot_graph(g: igraph.Graph):
 def main():
     g = igraph.Graph()
     max_moves = None
+    color_list = list()
     with open("input/pati.txt", "r", encoding='utf-8') as f:
         n_vertices = int(f.readline())
         print(f"Number of vertices: {n_vertices}")
@@ -62,8 +87,7 @@ def main():
                 break
         g.add_edges(edge_list)
 
-    plot_graph(g)
-    solve(g, max_moves)
+    solve(g, color_list, max_moves)
 
 
 if __name__ == "__main__":
