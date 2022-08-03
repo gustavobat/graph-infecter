@@ -1,16 +1,26 @@
 import igraph
 
 
+def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbors_ids: set):
+    neighbors_ids.add(vertex_id)
+    vertex = g.vs[vertex_id]
+    neighbors = vertex.neighbors()
+    for neigh_vertex in neighbors:
+        neighbor_id = neigh_vertex.index
+        if neigh_vertex["color"] == vertex["color"] and neighbor_id not in neighbors_ids:
+            get_ids_of_neighbors_of_same_color(g, neighbor_id, neighbors_ids)
+
+
 def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
     vertex = g.vs[vertex_id]
     old_color = vertex["color"]
+    neighbors_ids = set()
+    get_ids_of_neighbors_of_same_color(g, vertex_id, neighbors_ids)
     print(old_color)
     vertex["color"] = new_color
-    neighbors = vertex.neighbors()
-    for neigh_vertex in neighbors:
-        if neigh_vertex["color"] == old_color:
-            infect_vertex(g, neigh_vertex.index, new_color)
-
+    for neigh_id in neighbors_ids:
+        neighbor = g.vs[neigh_id]
+        neighbor["color"] = new_color
 
 
 def plot_graph(g: igraph.Graph):
@@ -50,6 +60,18 @@ def main():
 
         g.add_edges(edge_list)
         g.vs["color"] = vertex_colors 
+        plot_graph(g)
+        infect_vertex(g, 3, "red")
+        plot_graph(g)
+        infect_vertex(g, 3, "darkred")
+        plot_graph(g)
+        infect_vertex(g, 3, "green")
+        plot_graph(g)
+        infect_vertex(g, 3, "red")
+        plot_graph(g)
+        infect_vertex(g, 3, "darkred")
+        plot_graph(g)
+        infect_vertex(g, 3, "green")
         plot_graph(g)
 
 
