@@ -5,7 +5,6 @@ def solve(g: igraph.Graph, allowed_moves: int):
     print("solve")
 
 
-
 def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbors_ids: set):
     neighbors_ids.add(vertex_id)
     vertex = g.vs[vertex_id]
@@ -29,8 +28,6 @@ def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
 
 def plot_graph(g: igraph.Graph):
     layout = g.layout("kamada_kawai")
-    labels = [str(v.index + 1) for v in g.vs]
-    g.vs["label"] = labels
     igraph.plot(g, layout=layout)
 
 
@@ -42,15 +39,20 @@ def main():
         print(f"Number of vertices: {n_vertices}")
         max_moves = int(f.readline())
         print(f"Allowed movements: {max_moves}")
+
         g.add_vertices(n_vertices)
-        edge_list = list()
+        labels = [str(v.index + 1) for v in g.vs]
+        g.vs["label"] = labels
+
         vertex_colors = list()
         color_list = f.readline().rsplit()
         print("Colors:", *color_list)
         for i in range(n_vertices):
             color_tag = int(f.readline().rsplit()[0])
             vertex_colors.append(color_list[color_tag])
-            
+        g.vs["color"] = vertex_colors 
+
+        edge_list = list()
         while True:
             line = f.readline().rsplit()
             if line:
@@ -58,10 +60,10 @@ def main():
                 edge_list.append(edge_vertices)
             else:
                 break
-
         g.add_edges(edge_list)
-        g.vs["color"] = vertex_colors 
-        plot_graph(g)
+
+    plot_graph(g)
+    solve(g, max_moves)
 
 
 if __name__ == "__main__":
