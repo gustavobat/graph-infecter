@@ -41,14 +41,10 @@ def main():
         g.add_vertices(n_vertices)
         edge_list = list()
         vertex_colors = list()
+        color_list = f.readline().rsplit()
         for i in range(n_vertices):
-            color_tag = f.readline().rsplit()[0]
-            if color_tag == 'G':
-                vertex_colors.append('green')
-            if color_tag == 'M':
-                vertex_colors.append('darkred')
-            if color_tag == 'R':
-                vertex_colors.append('red')
+            color_tag = int(f.readline().rsplit()[0])
+            vertex_colors.append(color_list[color_tag])
             
         while True:
             line = f.readline().rsplit()
