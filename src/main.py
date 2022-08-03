@@ -1,6 +1,11 @@
 import igraph
 
 
+def solve(g: igraph.Graph, allowed_moves: int):
+    print("solve")
+
+
+
 def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbors_ids: set):
     neighbors_ids.add(vertex_id)
     vertex = g.vs[vertex_id]
@@ -16,7 +21,6 @@ def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
     old_color = vertex["color"]
     neighbors_ids = set()
     get_ids_of_neighbors_of_same_color(g, vertex_id, neighbors_ids)
-    print(old_color)
     vertex["color"] = new_color
     for neigh_id in neighbors_ids:
         neighbor = g.vs[neigh_id]
@@ -42,6 +46,7 @@ def main():
         edge_list = list()
         vertex_colors = list()
         color_list = f.readline().rsplit()
+        print("Colors:", *color_list)
         for i in range(n_vertices):
             color_tag = int(f.readline().rsplit()[0])
             vertex_colors.append(color_list[color_tag])
@@ -56,18 +61,6 @@ def main():
 
         g.add_edges(edge_list)
         g.vs["color"] = vertex_colors 
-        plot_graph(g)
-        infect_vertex(g, 3, "red")
-        plot_graph(g)
-        infect_vertex(g, 3, "darkred")
-        plot_graph(g)
-        infect_vertex(g, 3, "green")
-        plot_graph(g)
-        infect_vertex(g, 3, "red")
-        plot_graph(g)
-        infect_vertex(g, 3, "darkred")
-        plot_graph(g)
-        infect_vertex(g, 3, "green")
         plot_graph(g)
 
 
