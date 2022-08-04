@@ -41,13 +41,21 @@ def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbor
 
 def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
     vertex = g.vs[vertex_id]
-    old_color = vertex["color"]
+    vertex["color"] = new_color
+
     neighbors_ids = set()
     get_ids_of_neighbors_of_same_color(g, vertex_id, neighbors_ids)
-    vertex["color"] = new_color
-    for neigh_id in neighbors_ids:
-        neighbor = g.vs[neigh_id]
-        neighbor["color"] = new_color
+
+    contract_vertices_id_mapping = [min(neighbors_ids) if v.index in neighbors_ids else v.index for v in g.vs]
+    color_mapping = [g.vs[min(neighbors_ids)]["color"] if v.index in neighbors_ids else v["color"] for v in g.vs]
+    label_mapping = [g.vs[min(neighbors_ids)]["label"] if v.index in neighbors_ids else v["label"] for v in g.vs]
+
+    g.contract_vertices(contract_vertices_id_mapping)
+    g.vs["color"] = color_mapping
+    g.vs["label"] = label_mapping
+
+    g.delete_vertices([v.index for v in g.vs if v.degree() == 0])
+    g.simplify()
 
 
 def plot_graph(g: igraph.Graph):
