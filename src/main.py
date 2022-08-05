@@ -83,7 +83,7 @@ def main():
         for i in range(n_vertices):
             color_tag = int(f.readline().rsplit()[0])
             vertex_colors.append(color_list[color_tag])
-        g.vs["color"] = vertex_colors 
+        g.vs["color"] = vertex_colors
 
         edge_list = list()
         while True:
