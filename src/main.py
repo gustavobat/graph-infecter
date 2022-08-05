@@ -2,31 +2,71 @@ import igraph
 from copy import deepcopy
 
 
-def solve(g: igraph.Graph, color_list: list, allowed_moves: int) -> bool:
-    print(f"Trying new solution, moves: {allowed_moves}")
-    print(g.vs[0]["color"])
-    if allowed_moves == 0:
-        return False
-    possible_vertices_to_infect = set()
-    for vertex in g.vs:
-        neighbors_ids = set()
-        get_ids_of_neighbors_of_same_color(g, vertex.index, neighbors_ids)
-        possible_vertices_to_infect.add(min(neighbors_ids))
-    
-    if len(possible_vertices_to_infect) == 1:
-        print("SOLVED")
+def ids_to_colors_tuple(g: igraph.Graph, vertices_id: list):
+    return tuple([g.vs[v_id]["color"] for v_id in vertices_id])
+
+
+def can_not_solve_all_paths_at_once(g: igraph.Graph, paths_that_need_all_moves: list) -> bool:
+    n_destinations_that_need_all_moves = len(paths_that_need_all_moves)
+    paths_to_each_destination = list()
+    all_color_sequences = set()
+    for i in range(n_destinations_that_need_all_moves):
+        paths_to_dest = paths_that_need_all_moves[i]
+        paths_as_colors = list()
+        for path in paths_to_dest:
+            path_color_sequence = ids_to_colors_tuple(g, path)
+            all_color_sequences.add(path_color_sequence)
+            paths_as_colors.append(path_color_sequence)
+        paths_to_each_destination.append(paths_as_colors)
+
+    for color_sequence in all_color_sequences:
+        for paths_to_destination in paths_to_each_destination:
+            if color_sequence not in paths_to_destination:
+                return True
+
+    return False
+
+
+def get_possible_targets(g: igraph.Graph, max_moves: int):
+    n_vertices = len(g.vs)
+    impossible_starters = set()
+    for start in range(n_vertices):
+        paths_that_need_all_moves = list()
+        for end in range(start + 1, n_vertices):
+            results = g.get_all_shortest_paths(start, end)
+            if len(results[0]) > max_moves + 1:
+                impossible_starters.add(start)
+                impossible_starters.add(end)
+            if len(results[0]) == max_moves + 1:
+                paths_that_need_all_moves.append(results)
+        if len(paths_that_need_all_moves) > 1:
+            if can_not_solve_all_paths_at_once(g, paths_that_need_all_moves):
+                impossible_starters.add(start)
+
+    return set(range(n_vertices)) - impossible_starters
+
+
+def solve(g: igraph.Graph, color_list: list, max_moves: int, solution: list) -> bool:
+    if len(g.vs) == 1:
+        print("Solved!")
         return True
-    
-    for vertex_id in possible_vertices_to_infect:
+
+    if max_moves == 0:
+        return False
+
+    possible_targets_to_infect = get_possible_targets(g, max_moves)
+    if len(possible_targets_to_infect) == 0:
+        return False
+
+    for vertex_id in possible_targets_to_infect:
         colors_to_infect = deepcopy(color_list)
         colors_to_infect.remove(g.vs[vertex_id]["color"])
         for color in colors_to_infect:
             new_g = deepcopy(g)
             infect_vertex(new_g, vertex_id, color)
-            if solve(new_g, color_list, allowed_moves - 1) is False:
-                allowed_moves += 1
-                continue
-
+            if solve(new_g, color_list, max_moves - 1, solution):
+                solution.append((vertex_id, color))
+                return True
 
 
 def get_ids_of_neighbors_of_same_color(g: igraph.Graph, vertex_id: int, neighbors_ids: set):
