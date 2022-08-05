@@ -10,7 +10,7 @@ The objective is to infect all vertices in an optimized way, constrained to a ma
 
 ## Example
 <p align="center">
-  <img width="600" height="600" src="/resources/example_solution.gif">
+  <img width="500" height="500" src="/resources/example_solution.gif">
 </p>
 
 ## Input files
@@ -44,7 +44,7 @@ red blue green
 ```
 This will set the following graph:
 <p align="center">
-  <img width="600" height="600" src="/resources/small_input.jpeg">
+  <img width="450" height="450" src="/resources/small_input.jpeg">
 </p>
 
 # TODO
