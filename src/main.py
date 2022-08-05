@@ -2,6 +2,16 @@ import igraph
 from copy import deepcopy
 
 
+def plot_solution(g: igraph.Graph, solution: list):
+    for index, move in enumerate(reversed(solution)):
+        vertex_id = move[0]
+        color = move[1]
+        vertex_label = g.vs[vertex_id]["label"]
+        print(f"Infect vertex {vertex_label} with color '{color}'")
+        infect_vertex(g, vertex_id, color)
+        plot_graph(g, str(index + 1))
+
+
 def ids_to_colors_tuple(g: igraph.Graph, vertices_id: list):
     return tuple([g.vs[v_id]["color"] for v_id in vertices_id])
 
@@ -98,9 +108,10 @@ def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
     g.simplify()
 
 
-def plot_graph(g: igraph.Graph):
+def plot_graph(g: igraph.Graph, name: str):
     layout = g.layout("kamada_kawai")
-    igraph.plot(g, layout=layout)
+    plot = igraph.plot(g, layout=layout)
+    plot.save(str(name + ".jpeg"))
 
 
 def main():
@@ -135,7 +146,11 @@ def main():
                 break
         g.add_edges(edge_list)
 
-    solve(g, color_list, max_moves)
+    plot_graph(g, "0")
+    print("Solving...")
+    solution = list()
+    solve(g, color_list, max_moves, solution)
+    plot_solution(g, solution)
 
 
 if __name__ == "__main__":
