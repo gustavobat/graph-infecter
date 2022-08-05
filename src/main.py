@@ -53,8 +53,8 @@ def infect_vertex(g: igraph.Graph, vertex_id: int, new_color: str):
     g.contract_vertices(contract_vertices_id_mapping)
     g.vs["color"] = color_mapping
     g.vs["label"] = label_mapping
-
-    g.delete_vertices([v.index for v in g.vs if v.degree() == 0])
+    vertices_to_remove = [v.index for v in g.vs if v.degree() == 0]
+    g.delete_vertices(vertices_to_remove)
     g.simplify()
 
 
